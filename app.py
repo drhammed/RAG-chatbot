@@ -134,6 +134,7 @@ def ask_question(query, chain, llm):
 OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
 VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
 PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
+GROQ_API_KEY = st.secrets["api_keys"]["GROQ_API_KEY"]
 aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
 aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
 aws_region = st.secrets["aws"]["aws_region"]
