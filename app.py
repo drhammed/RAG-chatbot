@@ -16,6 +16,7 @@ import openai
 from langchain.chains import LLMChain, RetrievalQA
 import time
 import re
+import warnings
 from langchain_pinecone import PineconeVectorStore
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import HumanMessage
