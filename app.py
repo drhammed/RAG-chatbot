@@ -131,29 +131,12 @@ def ask_question(query, chain, llm):
     return final_response
 
 # Setup - Streamlit secrets
-#since I am deploying this locally, I don't need the st_secret. So, bypass this
-
-# OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
-# VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
-# PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
-# aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
-# aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
-# aws_region = st.secrets["aws"]["aws_region"]
-
-load_dotenv()
-
-# Initialize Pinecone
-PINECONE_API_KEY = os.getenv('My_Pinecone_API_key')
-# Initialize OpenAI
-OPENAI_API_KEY = os.getenv('My_OpenAI_API_key')
-# Initialize VoyageAI
-VOYAGE_AI_API_KEY = os.getenv("My_voyageai_API_key")
-#Initialize the GroqAPI
-GROQ_API_KEY = os.getenv("My_Groq_API_key")
-
-aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-aws_region = os.getenv('AWS_REGION')
+OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
+VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
+PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
+aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
+aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
+aws_region = st.secrets["aws"]["aws_region"]
     
 
 # Langchain stuff
