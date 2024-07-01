@@ -1,6 +1,9 @@
 #pip install langchain_voyageai
 #!pip install langchain_openai
 #!pip install langchain_pinecone
+#pip install groq
+#!pip install langchain_groq
+
 
 import streamlit as st
 from langchain_voyageai import VoyageAIEmbeddings
@@ -13,6 +16,7 @@ from pinecone import Pinecone
 import pinecone
 from langchain_openai import ChatOpenAI
 import openai
+from groq import Groq
 from langchain.chains import LLMChain, RetrievalQA
 import time
 import re
@@ -24,8 +28,16 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.chains import ConversationChain
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables.base import Runnable
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+)
+from langchain_core.messages import SystemMessage
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain_groq import ChatGroq
 import uuid
-
 
 # Load environment variables from .env file
 #load_dotenv()
@@ -119,15 +131,39 @@ def ask_question(query, chain, llm):
     return final_response
 
 # Setup - Streamlit secrets
-OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
-VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
-PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
-aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
-aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
-aws_region = st.secrets["aws"]["aws_region"]
+#since I am deploying this locally, I don't need the st_secret. So, bypass this
+
+# OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
+# VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
+# PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
+# aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
+# aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
+# aws_region = st.secrets["aws"]["aws_region"]
+
+load_dotenv()
+
+# Initialize Pinecone
+PINECONE_API_KEY = os.getenv('My_Pinecone_API_key')
+# Initialize OpenAI
+OPENAI_API_KEY = os.getenv('My_OpenAI_API_key')
+# Initialize VoyageAI
+VOYAGE_AI_API_KEY = os.getenv("My_voyageai_API_key")
+#Initialize the GroqAPI
+GROQ_API_KEY = os.getenv("My_Groq_API_key")
+
+aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+aws_region = os.getenv('AWS_REGION')
+    
 
 # Langchain stuff
-llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
+#llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
+
+#Groq model
+model = 'llama3-70b-8192'
+# Initialize Groq Langchain chat object and conversation
+llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
+
 
 # Initialize the conversation memory
 memory = ConversationBufferMemory()
@@ -150,7 +186,6 @@ s3_client = boto3.client(
     region_name=aws_region
 )
 
-
 # Initialize Pinecone
 #pc = Pinecone(api_key=os.getenv("My_Pinecone_API_key"))
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
@@ -160,7 +195,6 @@ index_name = "diabetes-ind"
 #index = pc.Index(index_name, host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 
 # Initialize OpenAI
-OPENAI_API_KEY = os.getenv('My_OpenAI_API_key')
 openai.api_key = OPENAI_API_KEY
 
 # Set up LangChain objects
