@@ -233,4 +233,4 @@ if user_input:
     presigned_url = upload_file_to_s3(bucket_name, file_key, filename)
     
     # Display download link for chat history
-    st.markdown(f"[Download Chat History]({presigned_url})")
+    #st.markdown(f"[Download Chat History]({presigned_url})")
