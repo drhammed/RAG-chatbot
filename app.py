@@ -82,8 +82,16 @@ prompt_template = ChatPromptTemplate.from_template(
     "You are an assistant providing concise and relevant information for patient education queries. Only respond with relevant information or indicate if none is found."
 )
 
-# Initialize the conversation memory
-memory = ConversationBufferMemory()
+# Set up conversation buffer memory with a window
+conversational_memory_length = 5
+memory = ConversationBufferWindowMemory(
+    k=conversational_memory_length,
+    memory_key="chat_history",
+    return_messages=True
+)
+
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
 
 # Setup retry with backoff function
 def retry_with_backoff(api_call, max_retries=5):
