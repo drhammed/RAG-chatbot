@@ -39,6 +39,7 @@ from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
 import uuid
 from openai import OpenAIError
+from openai import error
 
 # Load environment variables from Streamlit secrets
 OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
@@ -90,7 +91,7 @@ def retry_with_backoff(api_call, max_retries=5):
     while retries < max_retries:
         try:
             return api_call()
-        except openai.error.RateLimitError as e:
+        except error.RateLimitError as e:
             wait_time = (2 ** retries) * 60  # Exponential backoff
             print(f"Rate limit exceeded. Retrying in {wait_time} seconds...")
             time.sleep(wait_time)
