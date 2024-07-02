@@ -152,11 +152,20 @@ llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
 # Initialize the conversation memory
 memory = ConversationBufferMemory()
 
+# prompt_template = ChatPromptTemplate.from_template(
+#         "Instruction: You are a helpful assistant to help users with their patient education queries. \
+#         Based on the following information, provide a summarized & concise explanation using a couple of sentences. \
+#         Only respond with the information relevant to the user query {query}, \
+#         if there are none, make sure you say the `magic words`: 'I don't know, I did not find the relevant data in the knowledge base.' \
+#         But you could carry out some conversations with the user to make them feel welcomed and comfortable, in that case you don't have to say the `magic words`. \
+#         In the event that there's relevant info, make sure to attach the download button at the very end: \n\n[More Info]({s3_gen_url}) \
+#         Context: {combined_content}"
+#     )
+
 prompt_template = ChatPromptTemplate.from_template(
-        "Instruction: You are a helpful assistant to help users with their patient education queries. \
-        Based on the following information, provide a summarized & concise explanation using a couple of sentences. \
-        Only respond with the information relevant to the user query {query}, \
-        if there are none, make sure you say the `magic words`: 'I don't know, I did not find the relevant data in the knowledge base.' \
+        "Instruction: You're an assistant providing concise and relevant information for patient education queries. \
+        Only respond with relevant query {query}. \
+        If there are none, make sure you say the `magic words`: 'I don't know, I did not find the relevant data in the knowledge base.' \
         But you could carry out some conversations with the user to make them feel welcomed and comfortable, in that case you don't have to say the `magic words`. \
         In the event that there's relevant info, make sure to attach the download button at the very end: \n\n[More Info]({s3_gen_url}) \
         Context: {combined_content}"
