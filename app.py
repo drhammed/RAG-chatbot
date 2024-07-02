@@ -90,11 +90,14 @@ def retry_with_backoff(api_call, max_retries=5):
     while retries < max_retries:
         try:
             return api_call()
-        except error.RateLimitError as e:
-            wait_time = (2 ** retries) * 60  # Exponential backoff
-            print(f"Rate limit exceeded. Retrying in {wait_time} seconds...")
-            time.sleep(wait_time)
-            retries += 1
+        except OpenAIError as e:
+            if isinstance(e, openai.error.RateLimitError):
+                wait_time = (2 ** retries) * 60  # Exponential backoff
+                print(f"Rate limit exceeded. Retrying in {wait_time} seconds...")
+                time.sleep(wait_time)
+                retries += 1
+            else:
+                raise e
     raise Exception("Maximum retries exceeded")
 
 # Function to generate pre-signed URL
