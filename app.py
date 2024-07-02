@@ -40,6 +40,11 @@ from langchain_groq import ChatGroq
 import uuid
 from openai import OpenAIError
 
+# Set up Streamlit app
+st.set_page_config(page_title="Custom Chatbot", layout="wide")
+st.title("Custom Chatbot with Retrieval Abilities")
+
+
 # Load environment variables from Streamlit secrets
 OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
 VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
@@ -151,13 +156,15 @@ def retrieve_and_format_response(query, retriever, llm, max_docs=5, max_chars=10
     return response
 
 # Function to save chat history to a file
+
 def save_chat_history_to_file(filename, history):
     with open(filename, 'w') as file:
-         file.write(history)
-
+        json.dump(history, file)
+        
 # Function to upload the file to S3
 def upload_file_to_s3(bucket, key, filename):
     s3_client.upload_file(filename, bucket, key)
+    return generate_presigned_url(f"s3://{bucket}/{key}")
 
 # Example usage with memory
 def ask_question(query, chain, llm):
@@ -187,6 +194,12 @@ rag_chain = (
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
+# Define the S3 bucket and file details
+bucket_name = "chatbot-pro"
+folder_name = "chat-history"
+file_key = f"{folder_name}/chat_history_{uuid.uuid4()}.json"
+
+
 # Display chat messages from history
 for message in st.session_state["messages"]:
     with st.chat_message(message["role"]):
@@ -211,3 +224,13 @@ if user_input:
     
     with st.chat_message("assistant"):
         st.markdown(bot_response)
+        
+    # Save chat history to a file
+    filename = "chat_history.json"
+    save_chat_history_to_file(filename, st.session_state["messages"])
+    
+    # Upload the file to S3 and get the pre-signed URL
+    presigned_url = upload_file_to_s3(bucket_name, file_key, filename)
+    
+    # Display download link for chat history
+    st.markdown(f"[Download Chat History]({presigned_url})")
