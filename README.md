@@ -3,6 +3,7 @@ A comprehensive chatbot application that integrates advanced retrieval capabilit
 The application uses the Groq API to generate responses and leverages LangChain's [ConversationBufferWindowMemory](https://python.langchain.com/v0.1/docs/modules/memory/types/buffer_window/) to maintain a history of the conversation, providing context for the chatbot's responses.
 
 **Features**
+
 Conversational Interface: The application provides a conversational interface where users can ask questions or make statements, and the chatbot responds accordingly.
 
 Contextual Responses: The application maintains a history of the conversation, which is used to provide relevant and context for the chatbot's responses.
@@ -18,7 +19,9 @@ Multi-API Integration: Integrates various APIs including Groq, VoyageAI, Pinecon
 Presigned URLs: The application generates presigned URLs for S3-stored documents, allowing users to access additional resources easily.
 
 
+
 **Usage**
+
 Initialize Objects: Set up necessary objects including S3 client, OpenAI API, and vector store.
 
 Conversational Memory: Use ConversationBufferWindowMemory to maintain a conversation history.
