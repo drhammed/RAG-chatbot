@@ -122,16 +122,23 @@ def generate_presigned_url(s3_uri):
     return presigned_url
 
 # Function to retrieve documents, generate URLs, and format the response
-def retrieve_and_format_response(query, retriever, llm):
-    docs = retriever.get_relevant_documents(query)
+
+def retrieve_and_format_response(query, retriever, llm, max_docs=3, max_chars=1000):
+    docs = retriever.get_relevant_documents(query)[:max_docs]
     
     formatted_docs = []
+    total_length = 0
     for doc in docs:
         content_data = doc.page_content
         s3_uri = doc.metadata['id']
         s3_gen_url = generate_presigned_url(s3_uri)
         formatted_doc = f"{content_data}\n\n[More Info]({s3_gen_url})"
+        
+        if total_length + len(formatted_doc) > max_chars:
+            break
+        
         formatted_docs.append(formatted_doc)
+        total_length += len(formatted_doc)
     
     combined_content = "\n\n".join(formatted_docs)
     
@@ -142,6 +149,32 @@ def retrieve_and_format_response(query, retriever, llm):
 
     response = retry_with_backoff(lambda: llm([message]))
     return response
+
+# Function to save chat history to a file
+def save_chat_history_to_file(filename, history):
+    with open(filename, 'w') as file:
+         file.write(history)
+
+# Function to upload the file to S3
+def upload_file_to_s3(bucket, key, filename):
+    s3_client.upload_file(filename, bucket, key)
+
+# Example usage with memory
+def ask_question(query, chain, llm):
+    # Retrieve and format the response with pre-signed URLs
+    response_with_docs = retrieve_and_format_response(query, retriever, llm)
+    
+    # Add the retrieved response to the memory
+    memory.save_context({"input": query}, {"output": response_with_docs['answer']})
+    
+    # Use the conversation chain to get the final response
+    response = chain.invoke(query)
+    pattern = r"s3(.*?)(?=json)"
+    s3_uris = ["s3" + x + "json" for x in re.findall(pattern, response)]
+    for s3_uri in s3_uris:
+        final_response = response.replace(s3_uri, generate_presigned_url(s3_uri))
+    return final_response
+
 
 # Initialize rag_chain
 rag_chain = (
