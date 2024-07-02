@@ -1,18 +1,44 @@
+#pip install langchain_voyageai
+#!pip install langchain_openai
+#!pip install langchain_pinecone
+#pip install groq
+#!pip install langchain_groq
+
+
 import streamlit as st
+from langchain_voyageai import VoyageAIEmbeddings
+import os
+import json
+import boto3
+from dotenv import load_dotenv
+from urllib.parse import urlparse
+from pinecone import Pinecone
+import pinecone
+from langchain_openai import ChatOpenAI
+import openai
+from groq import Groq
+from langchain.chains import LLMChain, RetrievalQA
 import time
 import re
 import warnings
-from urllib.parse import urlparse
-import boto3
-from langchain_voyageai import VoyageAIEmbeddings
-from langchain_openai import ChatOpenAI
-from langchain_groq import ChatGroq
-from langchain.chains import LLMChain, RetrievalQA
 from langchain_pinecone import PineconeVectorStore
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import HumanMessage
 from langchain.prompts import ChatPromptTemplate
+from langchain.chains import ConversationChain
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables.base import Runnable
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+)
+from langchain_core.messages import SystemMessage
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain_groq import ChatGroq
+import uuid
+
 
 # Load environment variables from Streamlit secrets
 OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
