@@ -73,8 +73,8 @@ vector_store = PineconeVectorStore.from_existing_index(
 retriever = vector_store.as_retriever()
 
 # Groq model
-#model = 'llama3-70b-8192'
-model = 'llama3-8b-8192'
+model = 'llama3-70b-8192'
+#model = 'llama3-8b-8192'
 llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
 
 # Simplified prompt template
