@@ -71,6 +71,9 @@ embedding_function = VoyageAIEmbeddings(
 )
 
 # Initialize Pinecone
+pinecone.init(api_key=PINECONE_API_KEY)
+
+# Initialize Pinecone
 vector_store = PineconeVectorStore.from_existing_index(
     embedding=embedding_function,
     index_name="diabetes-ind"
