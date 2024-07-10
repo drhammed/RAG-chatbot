@@ -81,7 +81,7 @@ index_name = "diabetes-ind"
 # Initialize Pinecone
 vector_store = PineconeVectorStore.from_existing_index(
     embedding=embedding_function,
-    index_name=index_name
+    index_name="diabetes-ind"
 )
 
 
