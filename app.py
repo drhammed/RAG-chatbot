@@ -79,17 +79,11 @@ index_name = "diabetes-ind"
 #index = pc.Index(index_name, host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 
 # Initialize Pinecone
-#vector_store = PineconeVectorStore.from_existing_index(
- #   embedding=embedding_function,
-  #  index_name=index_name
-#)
-
-namespace = "( Default )"
-vector_store = Pinecone(
-    index_name=index_name,
+vector_store = pc.PineconeVectorStore.from_existing_index(
     embedding=embedding_function,
-    namespace=namespace,
+    index_name=index_name
 )
+
 
 retriever = vector_store.as_retriever()
 
