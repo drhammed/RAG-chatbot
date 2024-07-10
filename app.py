@@ -74,7 +74,7 @@ embedding_function = VoyageAIEmbeddings(
 )
 
 # Initialize Pinecone
-Pinecone(api_key=PINECONE_API_KEY)
+Pinecone(api_key=PINECONE_API_KEY,host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 index_name = "diabetes-ind"
 #index = pc.Index(index_name, host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 
