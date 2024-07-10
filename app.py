@@ -51,8 +51,7 @@ st.title("Custom Chatbot with Retrieval Abilities")
 # Load environment variables from Streamlit secrets
 OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
 VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
-#PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
-PINECONE_API_KEY = "6b97ff56-eda7-4830-8825-8daea3a414ba"
+PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
 GROQ_API_KEY = st.secrets["api_keys"]["GROQ_API_KEY"]
 aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
 aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
