@@ -78,7 +78,7 @@ index_name = "diabetes-ind"
 # Initialize Pinecone
 vector_store = PineconeVectorStore.from_existing_index(
     embedding=embedding_function,
-    index_name="diabetes-ind"
+    index_name=index_name
 )
 retriever = vector_store.as_retriever()
 
