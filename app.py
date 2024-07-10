@@ -57,17 +57,6 @@ aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
 aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
 aws_region = st.secrets["aws"]["aws_region"]
 
-#load_dotenv()
-
-# Initialize Pinecone
-#PINECONE_API_KEY = os.getenv('My_Pinecone_API_key')
-# Initialize OpenAI
-#OPENAI_API_KEY = os.getenv('My_OpenAI_API_key')
-# Initialize VoyageAI
-#VOYAGE_AI_API_KEY = os.getenv("My_voyageai_API_key")
-#Initialize the GroqAPI
-#GROQ_API_KEY = os.getenv("My_Groq_API_key")
-
 
 # Initialize necessary objects
 s3_client = boto3.client(
