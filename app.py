@@ -21,6 +21,7 @@ from langchain.chains import LLMChain, RetrievalQA
 import time
 import re
 import warnings
+from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import HumanMessage
@@ -39,6 +40,8 @@ from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
 import uuid
 from openai import OpenAIError
+
+
 
 # Set up Streamlit app
 st.set_page_config(page_title="Custom Chatbot", layout="wide")
@@ -76,10 +79,18 @@ index_name = "diabetes-ind"
 #index = pc.Index(index_name, host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 
 # Initialize Pinecone
-vector_store = PineconeVectorStore.from_existing_index(
+#vector_store = PineconeVectorStore.from_existing_index(
+ #   embedding=embedding_function,
+  #  index_name=index_name
+#)
+
+namespace = "( Default )"
+vector_store = Pinecone(
+    index_name=index_name,
     embedding=embedding_function,
-    index_name=index_name
+    namespace=namespace,
 )
+
 retriever = vector_store.as_retriever()
 
 # Groq model
