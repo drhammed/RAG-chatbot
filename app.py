@@ -12,8 +12,8 @@ import json
 import boto3
 from dotenv import load_dotenv
 from urllib.parse import urlparse
-from pinecone import Pinecone
 import pinecone
+from pinecone import Pinecone
 from langchain_openai import ChatOpenAI
 import openai
 from groq import Groq
