@@ -1,0 +1,15 @@
+*.log
+*.cache
+*.csv
+*.gz
+*.zip
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+node_modules/
+tests/
+docs/
+examples/
+*.md
