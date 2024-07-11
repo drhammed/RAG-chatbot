@@ -62,6 +62,14 @@ s3_client = boto3.client(
     region_name=aws_region
 )
 
+# Initialize Pinecone
+os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
+pc = Pinecone(api_key=PINECONE_API_KEY)
+## HARD CODED index names and host
+index_name = "diabetes-ind"
+#index = pc.Index(index_name, host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
+
+
 openai.api_key = OPENAI_API_KEY
 
 model_name = "voyage-large-2"
@@ -69,10 +77,6 @@ embedding_function = VoyageAIEmbeddings(
     model=model_name,  
     voyage_api_key=VOYAGE_AI_API_KEY
 )
-
-# Initialize Pinecone
-Pinecone(api_key=PINECONE_API_KEY,host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
-index_name = "diabetes-ind"
 
 # Initialize Pinecone vector store
 vector_store = PineconeVectorStore.from_existing_index(
