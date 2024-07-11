@@ -58,7 +58,8 @@ aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
 aws_region = st.secrets["aws"]["aws_region"]
 
 # Initialize Pinecone
-Pinecone(api_key=PINECONE_API_KEY,host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
+os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
+pc = Pinecone(api_key=PINECONE_API_KEY)
 index_name = "diabetes-ind"
 #index = pc.Index(index_name, host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 
