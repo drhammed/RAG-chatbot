@@ -1,4 +1,11 @@
-from flask import Flask, request, jsonify
+#pip install langchain_voyageai
+#!pip install langchain_openai
+#!pip install langchain_pinecone
+#pip install groq
+#!pip install langchain_groq
+
+
+import streamlit as st
 from langchain_voyageai import VoyageAIEmbeddings
 import os
 import json
@@ -34,24 +41,21 @@ from langchain_groq import ChatGroq
 import uuid
 from openai import OpenAIError
 
-# Load environment variables from .env file
-load_dotenv()
-
-app = Flask(__name__)
 
 
-# Initialize Pinecone
-PINECONE_API_KEY = os.getenv('My_Pinecone_API_key')
-# Initialize OpenAI
-OPENAI_API_KEY = os.getenv('My_OpenAI_API_key')
-# Initialize VoyageAI
-VOYAGE_AI_API_KEY = os.getenv("My_voyageai_API_key")
-#Initialize the GroqAPI
-GROQ_API_KEY = os.getenv("My_Groq_API_key")
-#AWS key
-aws_access_key_id = os.getenv('aws_access_key_id')
-aws_secret_access_key = os.getenv('aws_secret_access_key')
-aws_region = os.getenv('aws_region')
+# Set up Streamlit app
+st.set_page_config(page_title="Custom Chatbot", layout="wide")
+st.title("Custom Chatbot with Retrieval Abilities")
+
+
+# Load environment variables from Streamlit secrets
+OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
+VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
+PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
+GROQ_API_KEY = st.secrets["api_keys"]["GROQ_API_KEY"]
+aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
+aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
+aws_region = st.secrets["aws"]["aws_region"]
 
 
 # Initialize necessary objects
@@ -63,9 +67,7 @@ s3_client = boto3.client(
 )
 
 # Initialize Pinecone
-os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
-pc = Pinecone(api_key=PINECONE_API_KEY)
-## HARD CODED index names and host
+Pinecone(api_key=PINECONE_API_KEY,host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 index_name = "diabetes-ind"
 #index = pc.Index(index_name, host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 
@@ -78,16 +80,23 @@ embedding_function = VoyageAIEmbeddings(
     voyage_api_key=VOYAGE_AI_API_KEY
 )
 
-# Initialize Pinecone vector store
+
+# Initialize Pinecone
 vector_store = PineconeVectorStore.from_existing_index(
     embedding=embedding_function,
     index_name="diabetes-ind"
 )
 
+
 retriever = vector_store.as_retriever()
 
-# OpenAI model
-llm = ChatOpenAI(model="gpt-4", openai_api_key=OPENAI_API_KEY)
+# Groq model
+#model = 'llama3-70b-8192'
+#model = 'llama3-8b-8192'
+#llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
+
+#OpenAI model
+llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
 
 # Simplified prompt template
 prompt_template = ChatPromptTemplate.from_template(
@@ -102,8 +111,8 @@ memory = ConversationBufferWindowMemory(
     return_messages=True
 )
 
-# Initialize chat history
-chat_history = []
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
 
 # Setup retry with backoff function
 def retry_with_backoff(api_call, max_retries=5):
@@ -134,6 +143,7 @@ def generate_presigned_url(s3_uri):
     return presigned_url
 
 # Function to retrieve documents, generate URLs, and format the response
+
 def retrieve_and_format_response(query, retriever, llm, max_docs=5, max_chars=1000):
     docs = retriever.get_relevant_documents(query)[:max_docs]
     
@@ -162,6 +172,7 @@ def retrieve_and_format_response(query, retriever, llm, max_docs=5, max_chars=10
     return response
 
 # Function to save chat history to a file
+
 def save_chat_history_to_file(filename, history):
     with open(filename, 'w') as file:
         json.dump(history, file)
@@ -187,6 +198,7 @@ def ask_question(query, chain, llm):
         final_response = response.replace(s3_uri, generate_presigned_url(s3_uri))
     return final_response
 
+
 # Initialize rag_chain
 rag_chain = (
     {"retrieved_context": retriever, "question": RunnablePassthrough()}
@@ -194,38 +206,47 @@ rag_chain = (
     | llm
 )
 
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
 # Define the S3 bucket and file details
 bucket_name = "chatbot-pro"
 folder_name = "chat-history"
 file_key = f"{folder_name}/chat_history_{uuid.uuid4()}.json"
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.json
-    user_input = data.get("message")
+
+# Display chat messages from history
+for message in st.session_state["messages"]:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Get user input
+user_input = st.chat_input("You: ")
+
+if user_input:
+    # Add user message to chat history
+    st.session_state["messages"].append({"role": "user", "content": user_input})
     
-    if user_input:
-        # Add user message to chat history
-        chat_history.append({"role": "user", "content": user_input})
-        
-        # Generate and display bot response
+    # Display user message
+    with st.chat_message("user"):
+        st.markdown(user_input)
+    
+    # Generate and display bot response
+    with st.spinner("Thinking..."):
         bot_response = retrieve_and_format_response(user_input, retriever, llm).content
+    
+    st.session_state["messages"].append({"role": "assistant", "content": bot_response})
+    
+    with st.chat_message("assistant"):
+        st.markdown(bot_response)
         
-        chat_history.append({"role": "assistant", "content": bot_response})
-        
-        # Save chat history to a file
-        filename = "chat_history.json"
-        save_chat_history_to_file(filename, chat_history)
-        
-        # Upload the file to S3 and get the pre-signed URL
-        presigned_url = upload_file_to_s3(bucket_name, file_key, filename)
-        
-        return jsonify({
-            "response": bot_response,
-            "chat_history_url": presigned_url
-        })
-
-if __name__ == '__main__':
-        port = int(os.environ.get("PORT", 8787))
-        app.run(host="0.0.0.0", port=port, debug=True)
-
+    # Save chat history to a file
+    filename = "chat_history.json"
+    save_chat_history_to_file(filename, st.session_state["messages"])
+    
+    # Upload the file to S3 and get the pre-signed URL
+    presigned_url = upload_file_to_s3(bucket_name, file_key, filename)
+    
+    # Display download link for chat history
+    #st.markdown(f"[Download Chat History]({presigned_url})")
