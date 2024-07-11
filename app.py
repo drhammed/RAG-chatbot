@@ -81,22 +81,43 @@ vector_store = PineconeVectorStore.from_existing_index(
 retriever = vector_store.as_retriever()
 
 # OpenAI model
-llm = ChatOpenAI(model="gpt-4", openai_api_key=OPENAI_API_KEY)
+#llm = ChatOpenAI(model="gpt-4", openai_api_key=OPENAI_API_KEY)
+
+# OpenAI model
+#llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
+llm = ChatOpenAI(model="gpt-4o",temperature=0,max_tokens=None,timeout=None,max_retries=2,api_key=OPENAI_API_KEY)
+#Groq model
+#model = 'llama3-70b-8192'
+#model = 'gemma2-9b-it'
+#model = 'llama3-8b-8192'
+# Initialize Groq Langchain chat object and conversation
+#llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
 
 # Simplified prompt template
+# prompt_template = ChatPromptTemplate.from_template(
+#     """
+#     You are an assistant providing concise and relevant information for patient education queries about diabetes.
+#     If the user greets you, responds with a friendly greeting.
+#     If the user introduces themselves, respond politely and warmly.
+#     If the user expresses gratitude, respond graciously.
+#     If the user gives a compliment, respond appreciatively.
+#     If the user expresses humor or laughter, acknowledge it kindly.
+#     If the user asks a general question, respond appropriately.
+#     If the user asks a question specifically related to diabetes, provide a concise and relevant answer.
+#     If no relevant information is found, politely indicate that.
+#     """
+# )
+
 prompt_template = ChatPromptTemplate.from_template(
-    """
-    You are an assistant providing concise and relevant information for patient education queries about diabetes.
-    If the user greets you, responds with a friendly greeting.
-    If the user introduces themselves, respond politely and warmly.
-    If the user expresses gratitude, respond graciously.
-    If the user gives a compliment, respond appreciatively.
-    If the user expresses humor or laughter, acknowledge it kindly.
-    If the user asks a general question, respond appropriately.
-    If the user asks a question specifically related to diabetes, provide a concise and relevant answer.
-    If no relevant information is found, politely indicate that.
-    """
-)
+        "Instruction: You are a helpful assistant to help users with their patient education queries. \
+        Based on the following information, provide a summarized & concise explanation using a couple of sentences. \
+        Only respond with the information relevant to the user query {query}, \
+        if there are none, make sure you say the `magic words`: 'I don't know, I did not find the relevant data in the knowledge base.' \
+        But you could carry out some conversations with the user to make them feel welcomed and comfortable, in that case you don't have to say the `magic words`. \
+        In the event that there's relevant info, make sure to attach the download button at the very end: \n\n[More Info]({s3_gen_url}) \
+        Context: {combined_content}"
+    ) 
+
 
 # Set up conversation buffer memory with a window
 conversational_memory_length = 5
@@ -158,7 +179,16 @@ def retrieve_and_format_response(query, retriever, llm, max_docs=5, max_chars=10
     combined_content = "\n\n".join(formatted_docs)
 
     # Create a prompt for the LLM to generate an explanation based on the retrieved content
-    prompt = f"Instruction: Based on the following information, provide a summarized & concise explanation using a couple of sentences relevant to the query '{query}'.\n\nContext: {combined_content}"
+    #prompt = f"Instruction: Based on the following information, provide a summarized & concise explanation using a couple of sentences relevant to the query '{query}'.\n\nContext: {combined_content}"
+    
+    prompt = f"""Instruction: You are a helpful assistant to help users with their patient education queries. 
+Based on the following information, provide a summarized & concise explanation using a couple of sentences. 
+Only respond with the information relevant to the user query {query}, 
+if there are none, make sure you say the `magic words`: 'I don't know, I did not find the relevant data in the knowledge base.' 
+But you could carry out some conversations with the user to make them feel welcomed and comfortable, in that case you don't have to say the `magic words`. 
+In the event that there's relevant info, make sure to attach the download button at the very end: \n\n[More Info]({s3_gen_url}) 
+Context: {combined_content}"""
+
 
     message = HumanMessage(content=prompt)
 
