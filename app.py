@@ -169,8 +169,7 @@ def retrieve_and_format_response(query, retriever, llm, max_docs=5, max_chars=10
         s3_uri = doc.metadata['id']
         s3_gen_url = generate_presigned_url(s3_uri)
         formatted_doc = f"{content_data}\n\n[More Info]({s3_gen_url})"
-        formatted_docs.append(formatted_doc)
-
+        
         if total_length + len(formatted_doc) > max_chars:
             break
 
