@@ -68,14 +68,14 @@ aws_region = st.secrets["aws"]["aws_region"]
 # Langchain stuff
 # OpenAI model
 #llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
-llm = ChatOpenAI(model="gpt-4o",temperature=0.02,max_tokens=None,timeout=None,max_retries=2,api_key=OPENAI_API_KEY)
+#llm = ChatOpenAI(model="gpt-4o",temperature=0.02,max_tokens=None,timeout=None,max_retries=2,api_key=OPENAI_API_KEY)
 
 
 #Groq model
-#model = 'llama3-70b-8192'
+model = 'llama3-70b-8192'
 #model = 'gemma2-9b-it'
 # Initialize Groq Langchain chat object and conversation
-#llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
+llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
 
 
 
