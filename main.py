@@ -43,7 +43,7 @@ import uuid
 # Setup - Streamlit secrets
 #since I am deploying this locally, I don't need the st_secret. So, bypass this
 
-OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
+#OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
 VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
 PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
 GROQ_API_KEY = st.secrets["api_keys"]["GROQ_API_KEY"]
