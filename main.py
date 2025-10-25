@@ -104,7 +104,7 @@ warnings.filterwarnings("ignore")
 
 # Set up Streamlit app
 st.set_page_config(page_title="Custom Chatbot", layout="wide")
-st.title("Custom Chatbot with Retrieval Abilities")
+st.title("Patient Education Chatbot with Retrieval Abilities")
 
 # Sidebar for model selection and conversation mode
 st.sidebar.title("Settings")
