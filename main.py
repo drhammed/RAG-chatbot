@@ -41,6 +41,15 @@ import uuid
 
 
 # Setup - Streamlit secrets
+
+try:
+    st.write("Secrets available:", list(st.secrets.keys()))
+except Exception as e:
+    st.error(f"Secrets not found: {e}")
+
+
+
+
 #since I am deploying this locally, I don't need the st_secret. So, bypass this
 
 #OPENAI_API_KEY = st.secrets["api_keys"]["OPENAI_API_KEY"]
