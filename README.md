@@ -1,32 +1,39 @@
-A comprehensive chatbot application that integrates advanced retrieval capabilities to provide contextual and relevant information on Diabetes. The chatbot leverages various APIs to enhance its functionality and ensure accurate and efficient responses.
-
-The application uses the Groq API to generate responses and leverages LangChain's [ConversationBufferWindowMemory](https://python.langchain.com/v0.1/docs/modules/memory/types/buffer_window/) to maintain a history of the conversation, providing context for the chatbot's responses.
+A RAG-based Diabetes information chatbot that leverages advanced retrieval capabilities to provide contextual and accurate patient education on Diabetes. The application supports multiple LLM providers and conversation modes to deliver flexible and efficient responses.
 
 **Features**
 
-Conversational Interface: The application provides a conversational interface where users can ask questions or make statements, and the chatbot responds accordingly.
+**Dual Conversation Modes:**
+- **Single Question Mode**: Quick Q&A without conversation history for independent queries
+- **Chat Mode**: Context-aware conversations with memory of the last 10 messages (5 exchanges)
 
-Contextual Responses: The application maintains a history of the conversation, which is used to provide relevant and context for the chatbot's responses.
+**Multiple LLM Provider Support:**
+- **Ollama (Cloud)**: Access to powerful cloud-hosted models including:
+  - gpt-oss:20b
+  - gpt-oss:120b
+  
+- **Groq**: Fast inference with models like:
+  - meta-llama/llama-4-scout-17b-16e-instruct
+  - groq/compound-mini
 
-LangChain Integration: The chatbot is powered by the LangChain API, which uses advanced natural language processing techniques to generate human-like responses.
+**Retrieval Augmented Generation (RAG)**: Retrieves relevant diabetes education documents from a Pinecone vector store and generates accurate, contextually relevant responses based on the knowledge base.
 
-Retrieval Augmented Generation (RAG): The chatbot retrieves relevant documents from a Pinecone vector store and uses them to generate accurate and contextually relevant responses.
+**VoyageAI Embeddings**: Uses voyage-large-2 model for high-quality semantic search and document retrieval.
 
-Advanced Retrieval: Utilizes a powerful retrieval system to fetch relevant documents and information.
+**AWS S3 Integration**: Generates presigned URLs for documents stored in S3, allowing users to access additional resources and download full materials easily.
 
-Multi-API Integration: Integrates various APIs including Groq, VoyageAI, Pinecone, and OpenAI to enhance chatbot capabilities.
-
-Presigned URLs: The application generates presigned URLs for S3-stored documents, allowing users to access additional resources easily.
+**Streamlit Web Interface**: User-friendly interface with model selection, conversation mode switching, and real-time chat functionality.
 
 
 
 **Usage**
 
-Initialize Objects: Set up necessary objects including S3 client, OpenAI API, and vector store.
+1. **Initialize Objects**: Set up necessary components including S3 client, Pinecone vector store, and VoyageAI embeddings.
 
-Conversational Memory: Use ConversationBufferWindowMemory to maintain a conversation history.
+2. **Select Model Provider**: Choose between Ollama (Cloud) or Groq models from the sidebar.
 
-Retrieve and Format Responses: Use the retriever and Groq model to get relevant documents and generate responses.
+3. **Choose Conversation Mode**: Select "Single Question" for independent queries or "Chat" for context-aware conversations.
 
-Save and Upload Chat History: Save chat history to a file and upload it to S3, generating a presigned URL for download.
+4. **Query the Chatbot**: Ask questions about diabetes, and the chatbot will retrieve relevant information from the knowledge base and generate concise, informative responses.
+
+5. **Access Additional Resources**: Click on the "More Info" links in responses to download full documents from S3 via presigned URLs.
 
