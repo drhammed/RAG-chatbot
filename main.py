@@ -64,15 +64,15 @@ def get_secret(section, key, fallback_env=None, default=None):
         return default
 
 # --- API Keys ---
-OPENAI_API_KEY = get_secret("api_keys", "OPENAI_API_KEY", "OPENAI_API_KEY")
-VOYAGE_AI_API_KEY = get_secret("api_keys", "VOYAGE_AI_API_KEY", "VOYAGE_AI_API_KEY")
-PINECONE_API_KEY = get_secret("api_keys", "PINECONE_API_KEY", "PINECONE_API_KEY")
-GROQ_API_KEY = get_secret("api_keys", "GROQ_API_KEY", "GROQ_API_KEY")
+# OPENAI_API_KEY = get_secret("api_keys", "OPENAI_API_KEY", "OPENAI_API_KEY")
+# VOYAGE_AI_API_KEY = get_secret("api_keys", "VOYAGE_AI_API_KEY", "VOYAGE_AI_API_KEY")
+# PINECONE_API_KEY = get_secret("api_keys", "PINECONE_API_KEY", "PINECONE_API_KEY")
+# GROQ_API_KEY = get_secret("api_keys", "GROQ_API_KEY", "GROQ_API_KEY")
 
-# --- AWS Keys ---
-aws_access_key_id = get_secret("aws", "aws_access_key_id", "AWS_ACCESS_KEY_ID")
-aws_secret_access_key = get_secret("aws", "aws_secret_access_key", "AWS_SECRET_ACCESS_KEY")
-aws_region = get_secret("aws", "aws_region", "AWS_REGION")
+# # --- AWS Keys ---
+# aws_access_key_id = get_secret("aws", "aws_access_key_id", "AWS_ACCESS_KEY_ID")
+# aws_secret_access_key = get_secret("aws", "aws_secret_access_key", "AWS_SECRET_ACCESS_KEY")
+# aws_region = get_secret("aws", "aws_region", "AWS_REGION")
 
 
 
