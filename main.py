@@ -103,8 +103,8 @@ load_dotenv()
 warnings.filterwarnings("ignore")
 
 # Set up Streamlit app
-st.set_page_config(page_title="Custom Chatbot", layout="wide")
-st.title("Patient Education Chatbot with Retrieval Abilities")
+st.set_page_config(page_title="RAG-Powered Diabetes Education Chatbot", layout="wide")
+st.title("RAG-Powered Diabetes Education Chatbot")
 
 # Sidebar for model selection and conversation mode
 st.sidebar.title("Settings")
