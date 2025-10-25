@@ -48,6 +48,9 @@ except Exception as e:
     st.error(f"Secrets not found: {e}")
 
 
+st.write("API keys available:", list(st.secrets["api_keys"].keys()))
+st.write("AWS keys available:", list(st.secrets["aws"].keys()))
+
 
 
 #since I am deploying this locally, I don't need the st_secret. So, bypass this
