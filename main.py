@@ -97,8 +97,8 @@ PINECONE_API_KEY = os.getenv('My_Pinecone_API_key')
 # # Initialize VoyageAI
 VOYAGE_AI_API_KEY = os.getenv("My_voyageai_API_key")
 # #Initialize the GroqAPI
-#GROQ_API_KEY = os.getenv("My_Groq_API_key")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY = os.getenv("My_Groq_API_key")
+#GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 # #aws
 aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -234,7 +234,7 @@ index_name = "diabetes-ind"
 #index = pc.Index(index_name, host="https://diabetes-ind-3w8l5y1.svc.aped-4627-b74a.pinecone.io")
 
 # Initialize OpenAI
-openai.api_key = OPENAI_API_KEY
+# openai.api_key = OPENAI_API_KEY
 
 # Set up LangChain objects
 # VOYAGE AI
