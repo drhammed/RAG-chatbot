@@ -119,7 +119,7 @@ model = 'llama-3.1-8b-instant'
 
 
 # Load key from Streamlit secrets
-os.environ["GROQ_API_KEY"] = st.secrets["api_keys"]["GROQ_API_KEY"]
+#os.environ["GROQ_API_KEY"] = st.secrets["api_keys"]["GROQ_API_KEY"]
 
 # Initialize client
 client = Groq()
