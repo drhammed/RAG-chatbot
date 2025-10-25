@@ -39,6 +39,7 @@ from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
 import uuid
 from groq import Groq
+from httpx import Client
 
 
 # Setup - Streamlit secrets
