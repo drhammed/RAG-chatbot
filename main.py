@@ -87,6 +87,9 @@ def get_secret(section, key, fallback_env=None, default=None):
 # aws_region = st.secrets["aws"]["aws_region"]
 
 load_dotenv()
+# Load key from Streamlit secrets
+#os.environ["GROQ_API_KEY"] = st.secrets["api_keys"]["GROQ_API_KEY"]
+
 # # Initialize Pinecone
 PINECONE_API_KEY = os.getenv('My_Pinecone_API_key')
 # # Initialize OpenAI
@@ -115,32 +118,8 @@ model = 'llama-3.1-8b-instant'
 # Initialize Groq Langchain chat object and conversation
 #llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
 
-#llm = Groq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
+llm = Groq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
 
-
-
-# Load key from Streamlit secrets
-#os.environ["GROQ_API_KEY"] = st.secrets["api_keys"]["GROQ_API_KEY"]
-
-# Initialize client
-client = Groq()
-
-def chat_with_groq(user_input, model="llama-3.1-8b-instant"):
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "user", "content": user_input}
-        ],
-        temperature=0.02
-    )
-    return response.choices[0].message.content
-
-st.title("Custom Chatbot with Retrieval Abilities")
-
-prompt = st.text_input("Ask me anything:")
-if prompt:
-    reply = chat_with_groq(prompt)
-    st.write(reply)
 
 
 
