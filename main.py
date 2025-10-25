@@ -46,16 +46,6 @@ from httpx import Client
 
 # Setup - Streamlit secrets
 
-# try:
-#     st.write("Secrets available:", list(st.secrets.keys()))
-# except Exception as e:
-#     st.error(f"Secrets not found: {e}")
-
-
-#st.write("API keys available:", list(st.secrets["api_keys"].keys()))
-#st.write("AWS keys available:", list(st.secrets["aws"].keys()))
-#st.write("Groq key starts with:", str(st.secrets["api_keys"]["GROQ_API_KEY"])[:4])
-
 
 def get_secret(section, key, fallback_env=None, default=None):
     try:
@@ -66,16 +56,15 @@ def get_secret(section, key, fallback_env=None, default=None):
         return default
 
 # --- API Keys ---
-# OPENAI_API_KEY = get_secret("api_keys", "OPENAI_API_KEY", "OPENAI_API_KEY")
-# VOYAGE_AI_API_KEY = get_secret("api_keys", "VOYAGE_AI_API_KEY", "VOYAGE_AI_API_KEY")
-# PINECONE_API_KEY = get_secret("api_keys", "PINECONE_API_KEY", "PINECONE_API_KEY")
-# GROQ_API_KEY = get_secret("api_keys", "GROQ_API_KEY", "GROQ_API_KEY")
-# OLLAMA_API_KEY = get_secret("api_keys", "OLLAMA_API_KEY", "OLLAMA_API_KEY")
+VOYAGE_AI_API_KEY = get_secret("api_keys", "VOYAGE_AI_API_KEY", "VOYAGE_AI_API_KEY")
+PINECONE_API_KEY = get_secret("api_keys", "PINECONE_API_KEY", "PINECONE_API_KEY")
+GROQ_API_KEY = get_secret("api_keys", "GROQ_API_KEY", "GROQ_API_KEY")
+OLLAMA_API_KEY = get_secret("api_keys", "OLLAMA_API_KEY", "OLLAMA_API_KEY")
 
 # # --- AWS Keys ---
-# aws_access_key_id = get_secret("aws", "aws_access_key_id", "AWS_ACCESS_KEY_ID")
-# aws_secret_access_key = get_secret("aws", "aws_secret_access_key", "AWS_SECRET_ACCESS_KEY")
-# aws_region = get_secret("aws", "aws_region", "AWS_REGION")
+aws_access_key_id = get_secret("aws", "aws_access_key_id", "AWS_ACCESS_KEY_ID")
+aws_secret_access_key = get_secret("aws", "aws_secret_access_key", "AWS_SECRET_ACCESS_KEY")
+aws_region = get_secret("aws", "aws_region", "AWS_REGION")
 
 
 
@@ -90,47 +79,50 @@ def get_secret(section, key, fallback_env=None, default=None):
 # aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
 # aws_region = st.secrets["aws"]["aws_region"]
 
+# From .env file
+
 load_dotenv()
-# Load key from Streamlit secrets
-#os.environ["GROQ_API_KEY"] = st.secrets["api_keys"]["GROQ_API_KEY"]
 
-# # Initialize Pinecone
-PINECONE_API_KEY = os.getenv('My_Pinecone_API_key')
-# # Initialize OpenAI
-# OPENAI_API_KEY = os.getenv('My_OpenAI_API_key')
-# # Initialize VoyageAI
-VOYAGE_AI_API_KEY = os.getenv("My_voyageai_API_key")
-# #Initialize the GroqAPI
-GROQ_API_KEY = os.getenv("My_Groq_API_key")
-#GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-# #Initialize the Ollama API
-OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY")
-# #aws
-aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-aws_region = os.getenv('AWS_REGION')
+#APIs
+# PINECONE_API_KEY = os.getenv('My_Pinecone_API_key')
+# VOYAGE_AI_API_KEY = os.getenv("My_voyageai_API_key")
+# GROQ_API_KEY = os.getenv("My_Groq_API_key")
+# OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY")
 
+# AWS keys
+# aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+# aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+# aws_region = os.getenv('AWS_REGION')
 
-# Langchain stuff
 # OpenAI model
 #llm = ChatOpenAI(model="gpt-4o", openai_api_key=OPENAI_API_KEY)
 #llm = ChatOpenAI(model="gpt-4o",temperature=0.02,max_tokens=None,timeout=None,max_retries=2,api_key=OPENAI_API_KEY)
 
 
-# This will be initialized after the sidebar selection
 
-# Ignore warnings
 warnings.filterwarnings("ignore")
 
 # Set up Streamlit app
 st.set_page_config(page_title="Custom Chatbot", layout="wide")
 st.title("Custom Chatbot with Retrieval Abilities")
 
-# Sidebar for model selection
-st.sidebar.title("Model Selection")
+# Sidebar for model selection and conversation mode
+st.sidebar.title("Settings")
+
+# Conversation Mode Selection
+st.sidebar.subheader("Conversation Mode")
+conversation_mode = st.sidebar.radio(
+    "Select Mode:",
+    ["Single Question", "Chat"],
+    index=0,  # Default to Single Question mode
+    help="Single Question: Quick Q&A without memory. Chat: Conversation with context (last 10 messages)"
+)
+
+# Model Selection
+st.sidebar.subheader("Model Selection")
 model_provider = st.sidebar.selectbox(
     "Choose Model Provider:",
-    ["Ollama (Cloud)", "Groq"] 
+    ["Ollama (Cloud)", "Groq"]
 )
 
 if model_provider == "Ollama (Cloud)":
@@ -194,7 +186,7 @@ def generate_presigned_url(s3_uri):
     )
     return presigned_url
 
-# Function to retrieve documents, generate URLs, and format the response
+# Retrieve documents, generate URLs, and format the response
 def retrieve_and_format_response(query, retriever, llm):
     docs = retriever.get_relevant_documents(query)
     
@@ -310,27 +302,87 @@ rag_chain = (
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Display chat messages from history
-for message in st.session_state["messages"]:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+# Display mode indicator - Commented out for better UX
+# if conversation_mode == "Single Question":
+#     st.info("💬 Single Question Mode: Each question is independent with no conversation history.")
+# else:
+#     st.info("🗨️ Chat Mode: Maintaining conversation context (last 10 messages).")
+#     # Add clear chat button in chat mode
+#     if st.button("🗑️ Clear Chat History"):
+#         st.session_state["messages"] = []
+#         st.rerun()
+
+# Display chat messages from history (only in Chat mode)
+if conversation_mode == "Chat":
+    for message in st.session_state["messages"]:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
 # Get user input
 user_input = st.chat_input("You: ")
 
 if user_input:
-    # Add user message to chat history
-    st.session_state["messages"].append({"role": "user", "content": user_input})
-    
-    # Display user message
-    with st.chat_message("user"):
-        st.markdown(user_input)
-    
-    # Generate and display bot response
-    with st.spinner("Thinking..."):
-        bot_response = retrieve_and_format_response(user_input, retriever, llm).content
-    
-    st.session_state["messages"].append({"role": "assistant", "content": bot_response})
-    
-    with st.chat_message("assistant"):
-        st.markdown(bot_response)
+    if conversation_mode == "Single Question":
+        # Single Question Mode: No history, fresh response each time
+        # Display user message
+        with st.chat_message("user"):
+            st.markdown(user_input)
+
+        # Generate and display bot response
+        with st.spinner("Thinking..."):
+            bot_response = retrieve_and_format_response(user_input, retriever, llm).content
+
+        with st.chat_message("assistant"):
+            st.markdown(bot_response)
+
+    else:
+        # Chat Mode: Maintain conversation history (last 10 messages)
+        # Add user message to chat history
+        st.session_state["messages"].append({"role": "user", "content": user_input})
+
+        # Keep only last 10 messages (5 exchanges)
+        if len(st.session_state["messages"]) > 10:
+            st.session_state["messages"] = st.session_state["messages"][-10:]
+
+        # Display user message
+        with st.chat_message("user"):
+            st.markdown(user_input)
+
+        # Create context-aware prompt with conversation history
+        conversation_history = "\n".join([
+            f"{'User' if msg['role'] == 'user' else 'Assistant'}: {msg['content']}"
+            for msg in st.session_state["messages"][-10:]  # Last 10 messages
+        ])
+
+        # Generate and display bot response with context
+        with st.spinner("Thinking..."):
+            # Retrieve relevant documents
+            docs = retriever.get_relevant_documents(user_input)
+
+            formatted_docs = []
+            for doc in docs:
+                content_data = doc.page_content
+                s3_uri = doc.metadata['id']
+                s3_gen_url = generate_presigned_url(s3_uri)
+                formatted_doc = f"{content_data}\n\n[More Info]({s3_gen_url})"
+                formatted_docs.append(formatted_doc)
+
+            combined_content = "\n\n".join(formatted_docs)
+
+            # Create context-aware prompt
+            prompt_with_history = f"Instruction: You are a helpful assistant to help users with their patient education queries. \
+                   Based on the following information and conversation history, provide a summarized & concise explanation. \
+                   Only respond with the information relevant to the user query, \
+                   if there are none, make sure you say the `magic words`: 'I don't know, I did not find the relevant data in the knowledge base.' \
+                   But you could carry out some conversations with the user to make them feel welcomed and comfortable, in that case you don't have to say the `magic words`. \
+                   In the event that there's relevant info, make sure to attach the download button at the very end: \n\n[More Info]({s3_gen_url}) \
+                   \n\nConversation History:\n{conversation_history}\n\nContext: {combined_content}\n\nCurrent Question: {user_input}"
+
+            message = HumanMessage(content=prompt_with_history)
+            response = llm([message])
+            bot_response = response.content
+
+        st.session_state["messages"].append({"role": "assistant", "content": bot_response})
+
+        with st.chat_message("assistant"):
+            st.markdown(bot_response)
