@@ -38,6 +38,7 @@ from langchain_core.messages import SystemMessage
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
 import uuid
+from groq import Groq
 
 
 # Setup - Streamlit secrets
@@ -113,7 +114,37 @@ aws_region = os.getenv('AWS_REGION')
 #model = 'gemma2-9b-it'
 model = 'llama-3.1-8b-instant'
 # Initialize Groq Langchain chat object and conversation
-llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
+#llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
+
+#llm = Groq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
+
+
+
+# Load key from Streamlit secrets
+os.environ["GROQ_API_KEY"] = st.secrets["api_keys"]["GROQ_API_KEY"]
+
+# Initialize client
+client = Groq()
+
+def chat_with_groq(user_input, model="llama-3.1-8b-instant"):
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "user", "content": user_input}
+        ],
+        temperature=0.02
+    )
+    return response.choices[0].message.content
+
+st.title("Custom Chatbot with Retrieval Abilities")
+
+prompt = st.text_input("Ask me anything:")
+if prompt:
+    reply = chat_with_groq(prompt)
+    st.write(reply)
+
+
+
 
 
 
