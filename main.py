@@ -51,10 +51,7 @@ from groq import Groq
 
 #st.write("API keys available:", list(st.secrets["api_keys"].keys()))
 #st.write("AWS keys available:", list(st.secrets["aws"].keys()))
-
-
-
-st.write("Groq key starts with:", str(st.secrets["api_keys"]["GROQ_API_KEY"])[:4])
+#st.write("Groq key starts with:", str(st.secrets["api_keys"]["GROQ_API_KEY"])[:4])
 
 
 def get_secret(section, key, fallback_env=None, default=None):
