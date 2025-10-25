@@ -37,6 +37,8 @@ from langchain_core.prompts import (
 from langchain_core.messages import SystemMessage
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
+from langchain_community.llms import Ollama
+from langchain_community.chat_models import ChatOllama
 import uuid
 from groq import Groq
 from httpx import Client
@@ -68,6 +70,7 @@ def get_secret(section, key, fallback_env=None, default=None):
 # VOYAGE_AI_API_KEY = get_secret("api_keys", "VOYAGE_AI_API_KEY", "VOYAGE_AI_API_KEY")
 # PINECONE_API_KEY = get_secret("api_keys", "PINECONE_API_KEY", "PINECONE_API_KEY")
 # GROQ_API_KEY = get_secret("api_keys", "GROQ_API_KEY", "GROQ_API_KEY")
+# OLLAMA_API_KEY = get_secret("api_keys", "OLLAMA_API_KEY", "OLLAMA_API_KEY")
 
 # # --- AWS Keys ---
 # aws_access_key_id = get_secret("aws", "aws_access_key_id", "AWS_ACCESS_KEY_ID")
@@ -82,6 +85,7 @@ def get_secret(section, key, fallback_env=None, default=None):
 # VOYAGE_AI_API_KEY = st.secrets["api_keys"]["VOYAGE_AI_API_KEY"]
 # PINECONE_API_KEY = st.secrets["api_keys"]["PINECONE_API_KEY"]
 # GROQ_API_KEY = st.secrets["api_keys"]["GROQ_API_KEY"]
+# OLLAMA_API_KEY = st.secrets["api_keys"]["OLLAMA_API_KEY"]
 # aws_access_key_id = st.secrets["aws"]["aws_access_key_id"]
 # aws_secret_access_key = st.secrets["aws"]["aws_secret_access_key"]
 # aws_region = st.secrets["aws"]["aws_region"]
@@ -99,6 +103,8 @@ VOYAGE_AI_API_KEY = os.getenv("My_voyageai_API_key")
 # #Initialize the GroqAPI
 GROQ_API_KEY = os.getenv("My_Groq_API_key")
 #GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# #Initialize the Ollama API
+OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY")
 # #aws
 aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -111,27 +117,70 @@ aws_region = os.getenv('AWS_REGION')
 #llm = ChatOpenAI(model="gpt-4o",temperature=0.02,max_tokens=None,timeout=None,max_retries=2,api_key=OPENAI_API_KEY)
 
 
-#Groq model
-#model = 'llama3-70b-8192'
-#model = 'gemma2-9b-it'
-model = 'llama-3.1-8b-instant'
-# Initialize Groq Langchain chat object and conversation
-llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
+# This will be initialized after the sidebar selection
 
-#llm = Groq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
-
-
-
-
-
-
-
-# Ignore all warnings
+# Ignore warnings
 warnings.filterwarnings("ignore")
 
 # Set up Streamlit app
 st.set_page_config(page_title="Custom Chatbot", layout="wide")
 st.title("Custom Chatbot with Retrieval Abilities")
+
+# Sidebar for model selection
+st.sidebar.title("Model Selection")
+model_provider = st.sidebar.selectbox(
+    "Choose Model Provider:",
+    ["Ollama (Cloud)", "Groq"] 
+)
+
+if model_provider == "Ollama (Cloud)":
+    ollama_cloud_models = [
+        'gpt-oss:120b',
+        'gpt-oss:20b',
+        'llama3.3:70b',
+        'qwen2.5:72b',
+        'nemotron:70b'
+    ]
+    selected_model = st.sidebar.selectbox("Choose Ollama Cloud Model:", ollama_cloud_models)
+elif model_provider == "Groq":
+    groq_models = [
+        'meta-llama/llama-4-scout-17b-16e-instruct',
+        'groq/compound-mini'
+    ]
+    selected_model = st.sidebar.selectbox("Choose Groq Model:", groq_models)
+# Ollama (Local) - Commented out due to slow performance
+# elif model_provider == "Ollama (Local)":
+#     ollama_local_models = [
+#         'gemma3:12b',
+#         'llama3.1:latest',
+#         'llama2',
+#         'mistral'
+#     ]
+#     selected_model = st.sidebar.selectbox("Choose Ollama Local Model:", ollama_local_models)
+
+# Initialize LLM based on selection
+if model_provider == "Ollama (Cloud)":
+    if OLLAMA_API_KEY:
+        llm = ChatOllama(
+            model=selected_model,
+            temperature=0.02,
+            base_url="https://ollama.com",
+            headers={
+                "Authorization": f"Bearer {OLLAMA_API_KEY}"
+            }
+        )
+        st.sidebar.success(f"Using Ollama (Cloud): {selected_model}")
+    else:
+        st.sidebar.error("OLLAMA_API_KEY not found in .env file. Please add it to use Ollama Cloud models.")
+        st.sidebar.warning("Please set OLLAMA_API_KEY in your environment or Streamlit secrets.")
+        st.stop()  # Stop execution if no API key
+elif model_provider == "Groq":
+    llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=selected_model, temperature=0.02)
+    st.sidebar.success(f"Using Groq: {selected_model}")
+# Ollama (Local) - Commented out due to slow performance
+# elif model_provider == "Ollama (Local)":
+#     llm = ChatOllama(model=selected_model, temperature=0.02)
+#     st.sidebar.success(f"Using Ollama (Local): {selected_model}")
 
 # Function to generate pre-signed URL
 def generate_presigned_url(s3_uri):

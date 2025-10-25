@@ -16,6 +16,7 @@ langchain-voyageai>=0.1.0
 # LLM providers
 groq>=0.4.1,<1.0.0
 openai>=1.35.0
+ollama>=0.1.0
 
 # Vector store
 pinecone-client>=3.0.0
