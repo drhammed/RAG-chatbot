@@ -42,10 +42,10 @@ import uuid
 
 # Setup - Streamlit secrets
 
-try:
-    st.write("Secrets available:", list(st.secrets.keys()))
-except Exception as e:
-    st.error(f"Secrets not found: {e}")
+# try:
+#     st.write("Secrets available:", list(st.secrets.keys()))
+# except Exception as e:
+#     st.error(f"Secrets not found: {e}")
 
 
 st.write("API keys available:", list(st.secrets["api_keys"].keys()))
