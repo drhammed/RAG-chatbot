@@ -53,6 +53,9 @@ import uuid
 
 
 
+st.write("Groq key starts with:", str(st.secrets["api_keys"]["GROQ_API_KEY"])[:4])
+
+
 def get_secret(section, key, fallback_env=None, default=None):
     try:
         return st.secrets[section][key]
