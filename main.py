@@ -109,8 +109,9 @@ aws_region = os.getenv('AWS_REGION')
 
 
 #Groq model
-model = 'llama3-70b-8192'
+#model = 'llama3-70b-8192'
 #model = 'gemma2-9b-it'
+model = 'llama-3.1-8b-instant'
 # Initialize Groq Langchain chat object and conversation
 llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model, temperature=0.02)
 
