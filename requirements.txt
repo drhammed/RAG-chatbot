@@ -20,3 +20,4 @@ urllib3==2.2.1
 voyageai==0.2.3
 Werkzeug==3.0.3
 markdown2==2.4.13
+streamlit
