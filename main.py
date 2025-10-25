@@ -127,8 +127,8 @@ model_provider = st.sidebar.selectbox(
 
 if model_provider == "Ollama (Cloud)":
     ollama_cloud_models = [
-        'gpt-oss:120b',
         'gpt-oss:20b',
+        'gpt-oss:120b',
         'llama3.3:70b',
         'qwen2.5:72b',
         'nemotron:70b'
